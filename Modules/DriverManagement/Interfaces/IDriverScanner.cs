@@ -6,7 +6,7 @@ namespace Modules.DriverManagement.Interfaces
 {
     public interface IDriverScanner
     {
-        Task<IReadOnlyList<Driver>> ScanInstalledDriversAsync();
+        Task<IReadOnlyList<Driver>> ScanInstalledDriversAsync(bool forceRefresh = false);
         Task<Driver?> GetDriverByHardwareIdAsync(string hardwareId);
     }
 }

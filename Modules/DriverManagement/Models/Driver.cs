@@ -17,6 +17,8 @@ namespace Modules.DriverManagement.Models
         public bool IsSigned { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string? LatestAvailableVersion { get; set; }
+        public bool? UpdateAvailable { get; set; }
 
         public Driver() { }
 

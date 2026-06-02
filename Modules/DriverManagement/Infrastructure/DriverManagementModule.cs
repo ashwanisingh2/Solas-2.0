@@ -13,7 +13,10 @@ namespace Modules.DriverManagement.Infrastructure
             if (string.IsNullOrWhiteSpace(databasePath)) throw new ArgumentNullException(nameof(databasePath));
 
             services.AddSingleton<IDriverScanner, Services.DriverScannerService>();
+            services.AddSingleton<IDriverUpdateService, Services.LocalDriverUpdateService>();
             services.AddSingleton<IDriverHealthAnalyzer, Services.DriverHealthAnalyzerService>();
+            // System health service
+            services.AddSingleton<ISystemHealthService, Services.SystemHealthService>();
             services.AddSingleton<IDriverBackupService>(sp => new DriverBackupService(databasePath));
             services.AddSingleton<IDriverRestoreService>(sp => new DriverRestoreService(databasePath));
             services.AddSingleton<IDriverReportService>(sp => new DriverReportService(databasePath));

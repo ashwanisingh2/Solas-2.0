@@ -13,6 +13,8 @@ namespace Modules.DriverManagement.ViewModels
     {
         private readonly IDriverScanner _scanner;
         private readonly IDriverHealthAnalyzer _analyzer;
+        private readonly ISystemHealthService _systemService;
+        private readonly IDriverUpdateService _updateService;
 
         public ObservableCollection<Driver> Drivers { get; } = new ObservableCollection<Driver>();
 
@@ -31,16 +33,49 @@ namespace Modules.DriverManagement.ViewModels
         private double _healthScore;
         public double HealthScore { get => _healthScore; set => SetProperty(ref _healthScore, value); }
 
+        private double _cpuPercentage;
+        public double CpuPercentage { get => _cpuPercentage; set => SetProperty(ref _cpuPercentage, value); }
+
+        private long _totalMemoryMb;
+        public long TotalMemoryMb { get => _totalMemoryMb; set => SetProperty(ref _totalMemoryMb, value); }
+
+        private long _freeMemoryMb;
+        public long FreeMemoryMb { get => _freeMemoryMb; set => SetProperty(ref _freeMemoryMb, value); }
+
+        private long _diskTotalMb;
+        public long DiskTotalMb { get => _diskTotalMb; set => SetProperty(ref _diskTotalMb, value); }
+
+        private long _diskFreeMb;
+        public long DiskFreeMb { get => _diskFreeMb; set => SetProperty(ref _diskFreeMb, value); }
+
+        private bool _networkAvailable;
+        public bool NetworkAvailable { get => _networkAvailable; set => SetProperty(ref _networkAvailable, value); }
+
+        private int _installedPrinters;
+        public int InstalledPrinters { get => _installedPrinters; set => SetProperty(ref _installedPrinters, value); }
+
+        private bool _driversUpToDate;
+        public bool DriversUpToDate { get => _driversUpToDate; set => SetProperty(ref _driversUpToDate, value); }
+
         private bool _isRefreshing;
         public bool IsRefreshing { get => _isRefreshing; set => SetProperty(ref _isRefreshing, value); }
 
         public ICommand RefreshCommand { get; }
+        public ICommand StartAutoRefreshCommand { get; }
+        public ICommand StopAutoRefreshCommand { get; }
 
-        public DriverDashboardViewModel(IDriverScanner scanner, IDriverHealthAnalyzer analyzer)
+        private System.Threading.Timer? _autoRefreshTimer;
+        private readonly object _timerLock = new object();
+
+        public DriverDashboardViewModel(IDriverScanner scanner, IDriverHealthAnalyzer analyzer, ISystemHealthService systemService, IDriverUpdateService updateService)
         {
             _scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
             _analyzer = analyzer ?? throw new ArgumentNullException(nameof(analyzer));
+            _systemService = systemService ?? throw new ArgumentNullException(nameof(systemService));
+            _updateService = updateService ?? throw new ArgumentNullException(nameof(updateService));
             RefreshCommand = new AsyncRelayCommand(ExecuteRefreshAsync);
+            StartAutoRefreshCommand = new AsyncRelayCommand(StartAutoRefreshAsync, () => !AutoRefresh);
+            StopAutoRefreshCommand = new AsyncRelayCommand(StopAutoRefreshAsync, () => AutoRefresh);
         }
 
         private async Task ExecuteRefreshAsync()
@@ -50,7 +85,7 @@ namespace Modules.DriverManagement.ViewModels
             {
                 IsRefreshing = true;
                 Drivers.Clear();
-                var list = await _scanner.ScanInstalledDriversAsync();
+                var list = await _scanner.ScanInstalledDriversAsync(true);
                 foreach (var d in list) Drivers.Add(d);
 
                 var result = await _analyzer.AnalyzeAsync(list);
@@ -59,11 +94,82 @@ namespace Modules.DriverManagement.ViewModels
                 WarningDrivers = result.Warning;
                 CriticalDrivers = result.Critical;
                 HealthScore = result.HealthScore;
+
+                // Get system health metrics
+                try
+                {
+                    var sys = await _systemService.GetSystemHealthAsync();
+                    CpuPercentage = sys.CpuPercentage;
+                    TotalMemoryMb = sys.TotalMemoryMb;
+                    FreeMemoryMb = sys.FreeMemoryMb;
+                    DiskTotalMb = sys.DiskTotalMb;
+                    DiskFreeMb = sys.DiskFreeMb;
+                    NetworkAvailable = sys.NetworkAvailable;
+                    InstalledPrinters = sys.InstalledPrinters;
+                    DriversUpToDate = sys.DriversUpToDate;
+                }
+                catch
+                {
+                    // ignore system health failures for now
+                }
+
+                // Check for driver updates (use local index); throttle parallelism
+                try
+                {
+                    var tasks = list.Select(async d =>
+                    {
+                        try
+                        {
+                            var info = await _updateService.CheckForUpdateAsync(d);
+                            d.LatestAvailableVersion = info.LatestVersion;
+                            d.UpdateAvailable = !string.IsNullOrWhiteSpace(info.LatestVersion) && !string.Equals(info.LatestVersion, d.DriverVersion, StringComparison.OrdinalIgnoreCase);
+                        }
+                        catch { }
+                    });
+
+                    await Task.WhenAll(tasks);
+                }
+                catch { }
             }
             finally
             {
                 IsRefreshing = false;
             }
+        }
+
+        private Task StartAutoRefreshAsync()
+        {
+            AutoRefresh = true;
+            // start timer to refresh every 60 seconds
+            lock (_timerLock)
+            {
+                _autoRefreshTimer?.Dispose();
+                _autoRefreshTimer = new System.Threading.Timer(async _ =>
+                {
+                    if (IsRefreshing) return;
+                    try
+                    {
+                        await ExecuteRefreshAsync();
+                    }
+                    catch { }
+                }, null, 0, 60000);
+            }
+            ((AsyncRelayCommand)StartAutoRefreshCommand).RaiseCanExecuteChanged();
+            ((AsyncRelayCommand)StopAutoRefreshCommand).RaiseCanExecuteChanged();
+            return Task.CompletedTask;
+        }
+
+        private Task StopAutoRefreshAsync()
+        {
+            AutoRefresh = false;
+            lock (_timerLock)
+            {
+                _autoRefreshTimer?.Dispose();
+                _autoRefreshTimer = null;
+            }
+            ((AsyncRelayCommand)StartAutoRefreshCommand).RaiseCanExecuteChanged();
+            ((AsyncRelayCommand)StopAutoRefreshCommand).RaiseCanExecuteChanged();
+            return Task.CompletedTask;
         }
     }
 }

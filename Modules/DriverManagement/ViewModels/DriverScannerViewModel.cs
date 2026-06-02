@@ -35,7 +35,7 @@ namespace Modules.DriverManagement.ViewModels
             {
                 IsScanning = true;
                 Drivers.Clear();
-                var list = await _scanner.ScanInstalledDriversAsync();
+                var list = await _scanner.ScanInstalledDriversAsync(true);
                 foreach (var d in list)
                     Drivers.Add(d);
             }

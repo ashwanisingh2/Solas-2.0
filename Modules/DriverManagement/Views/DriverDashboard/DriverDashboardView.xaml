@@ -8,13 +8,17 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,12">
             <Button Content="Refresh" Command="{Binding RefreshCommand}" Width="100" Margin="0,0,8,0" />
+            <Button Content="Start Auto" Command="{Binding StartAutoRefreshCommand}" Width="100" Margin="0,0,8,0" />
+            <Button Content="Stop Auto" Command="{Binding StopAutoRefreshCommand}" Width="100" Margin="0,0,8,0" />
             <TextBlock Text="Health Score:" VerticalAlignment="Center" Margin="8,0,4,0" />
             <TextBlock Text="{Binding HealthScore}" VerticalAlignment="Center" FontWeight="Bold" />
+            <TextBlock Text="Refreshing..." Foreground="DarkBlue" FontWeight="Bold" Margin="12,0,0,0" Visibility="{Binding IsRefreshing, Converter={StaticResource BoolToVis}}" />
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,12">
@@ -44,7 +48,46 @@
             </Border>
         </StackPanel>
 
-        <DataGrid Grid.Row="2" ItemsSource="{Binding Drivers}" AutoGenerateColumns="False" IsReadOnly="True">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,12">
+            <Border Background="#F0F7FF" Padding="12" Margin="0,0,8,0" CornerRadius="4">
+                <StackPanel>
+                    <TextBlock Text="CPU %" Foreground="#333" />
+                    <TextBlock Text="{Binding CpuPercentage}" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+            <Border Background="#F7FFF0" Padding="12" Margin="0,0,8,0" CornerRadius="4">
+                <StackPanel>
+                    <TextBlock Text="Memory (MB)" Foreground="#333" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding FreeMemoryMb}" FontWeight="Bold" />
+                        <TextBlock Text=" / " Margin="4,0" />
+                        <TextBlock Text="{Binding TotalMemoryMb}" FontWeight="Bold" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <Border Background="#FFF7F0" Padding="12" Margin="0,0,8,0" CornerRadius="4">
+                <StackPanel>
+                    <TextBlock Text="Disk (MB)" Foreground="#333" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding DiskFreeMb}" FontWeight="Bold" />
+                        <TextBlock Text=" / " Margin="4,0" />
+                        <TextBlock Text="{Binding DiskTotalMb}" FontWeight="Bold" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <Border Background="#F0FFF7" Padding="12" CornerRadius="4">
+                <StackPanel>
+                    <TextBlock Text="Network" Foreground="#333" />
+                    <TextBlock Text="{Binding NetworkAvailable}" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <DataGrid Grid.Row="3" ItemsSource="{Binding Drivers}" AutoGenerateColumns="False" IsReadOnly="True"
+              EnableRowVirtualization="True"
+              VirtualizingStackPanel.IsVirtualizing="True"
+              VirtualizingStackPanel.VirtualizationMode="Recycling"
+              IsSynchronizedWithCurrentItem="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Device" Binding="{Binding DeviceName}" Width="*" />
                 <DataGridTextColumn Header="Vendor" Binding="{Binding Vendor}" Width="150" />
@@ -52,6 +95,11 @@
                 <DataGridTextColumn Header="Date" Binding="{Binding DriverDate}" Width="140" />
                 <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" />
                 <DataGridTextColumn Header="Hardware ID" Binding="{Binding HardwareId}" Width="200" />
+                <DataGridTextColumn Header="Update" Width="120">
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="UpdateAvailable" StringFormat="{0}" />
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

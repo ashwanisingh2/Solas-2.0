@@ -9,8 +9,18 @@ namespace Modules.DriverManagement.Services
 {
     public class DriverScannerService : IDriverScanner
     {
-        public async Task<IReadOnlyList<Driver>> ScanInstalledDriversAsync()
+        private readonly object _cacheLock = new object();
+        private IReadOnlyList<Driver>? _cache;
+        private DateTime _cacheTimestamp = DateTime.MinValue;
+        private readonly TimeSpan _cacheTtl = TimeSpan.FromSeconds(30);
+
+        public async Task<IReadOnlyList<Driver>> ScanInstalledDriversAsync(bool forceRefresh = false)
         {
+            if (!forceRefresh && _cache != null && (DateTime.UtcNow - _cacheTimestamp) < _cacheTtl)
+            {
+                return _cache;
+            }
+
             return await Task.Run(() =>
             {
                 var results = new List<Driver>();
@@ -44,7 +54,6 @@ namespace Modules.DriverManagement.Services
                                 }
                                 else
                                 {
-                                    // Win32 may return yyyymmdd or other formats; attempt parsing manually
                                     var s = obj["DriverDate"].ToString();
                                     if (s.Length >= 8 && int.TryParse(s.Substring(0, 8), out _))
                                     {
@@ -69,15 +78,20 @@ namespace Modules.DriverManagement.Services
                     throw new InvalidOperationException("Failed to query Win32_PnPSignedDriver: " + mex.Message, mex);
                 }
 
-                return results;
+                lock (_cacheLock)
+                {
+                    _cache = results.AsReadOnly();
+                    _cacheTimestamp = DateTime.UtcNow;
+                }
+
+                return _cache;
             });
         }
 
         public async Task<Driver?> GetDriverByHardwareIdAsync(string hardwareId)
         {
             if (string.IsNullOrWhiteSpace(hardwareId)) return null;
-
-            var drivers = await ScanInstalledDriversAsync();
+            var drivers = await ScanInstalledDriversAsync(false);
             foreach (var d in drivers)
             {
                 if (!string.IsNullOrWhiteSpace(d.HardwareId) && d.HardwareId.Contains(hardwareId, StringComparison.OrdinalIgnoreCase))
