@@ -136,13 +136,13 @@ namespace Modules.DriverManagement.Services
                 }
 
                 // Now, for each driver we want, attempt to match by INF name
-                using (var conn = new SqliteConnection($"Data Source={_databasePath}"))
+                using (var filterConn = new SqliteConnection($"Data Source={_databasePath}"))
                 {
-                    await conn.OpenAsync();
+                    await filterConn.OpenAsync();
                     foreach (var id in backup.DriverIds)
                     {
                         string inf = null;
-                        using (var cmd = conn.CreateCommand())
+                        using (var cmd = filterConn.CreateCommand())
                         {
                             cmd.CommandText = "SELECT InfName FROM Drivers WHERE Id = $id LIMIT 1";
                             cmd.Parameters.AddWithValue("$id", id);

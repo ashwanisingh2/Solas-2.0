@@ -31,7 +31,39 @@ namespace Modules.DriverManagement.Services
 
             try
             {
+                if (!Directory.Exists(sourceFolder))
+                {
+                    restore.Success = false;
+                    restore.Log = "Backup folder not found: " + restore.SourcePath;
+                    await InsertRestoreRecordAsync(restore);
+                    return restore;
+                }
+
+                if (!restore.DriverIds.Any())
+                {
+                    var infFiles = Directory.EnumerateFiles(sourceFolder, "*.inf", SearchOption.AllDirectories).ToList();
+                    if (!infFiles.Any())
+                    {
+                        restore.Success = false;
+                        restore.Log = "No driver .inf files found in: " + restore.SourcePath;
+                        await InsertRestoreRecordAsync(restore);
+                        return restore;
+                    }
+
+                    var anyFailed = false;
+                    foreach (var infFile in infFiles)
+                    {
+                        var exitCode = await RunPnPUtilAsync(infFile, restore);
+                        if (exitCode != 0) anyFailed = true;
+                    }
+
+                    restore.Success = !anyFailed;
+                    await InsertRestoreRecordAsync(restore);
+                    return restore;
+                }
+
                 // For each driver id, attempt to find INF in source folder and call pnputil /add-driver
+                var selectedRestoreFailed = false;
                 foreach (var id in restore.DriverIds)
                 {
                     string inf = null;
@@ -53,27 +85,12 @@ namespace Modules.DriverManagement.Services
 
                     foreach (var infFile in infFiles)
                     {
-                        var psi = new ProcessStartInfo
-                        {
-                            FileName = "pnputil.exe",
-                            Arguments = $"/add-driver \"{infFile}\" /install",
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
-
-                        using var proc = Process.Start(psi);
-                        if (proc == null) throw new InvalidOperationException("Failed to start pnputil process.");
-                        var stdout = await proc.StandardOutput.ReadToEndAsync();
-                        var stderr = await proc.StandardError.ReadToEndAsync();
-                        await proc.WaitForExitAsync();
-
-                        restore.Log += stdout + Environment.NewLine + stderr + Environment.NewLine;
+                        var exitCode = await RunPnPUtilAsync(infFile, restore);
+                        if (exitCode != 0) selectedRestoreFailed = true;
                     }
                 }
 
-                restore.Success = true;
+                restore.Success = !selectedRestoreFailed;
                 await InsertRestoreRecordAsync(restore);
                 return restore;
             }
@@ -84,6 +101,28 @@ namespace Modules.DriverManagement.Services
                 await InsertRestoreRecordAsync(restore);
                 return restore;
             }
+        }
+
+        private static async Task<int> RunPnPUtilAsync(string infFile, DriverRestore restore)
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "pnputil.exe",
+                Arguments = $"/add-driver \"{infFile}\" /install",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var proc = Process.Start(psi);
+            if (proc == null) throw new InvalidOperationException("Failed to start pnputil process.");
+            var stdout = await proc.StandardOutput.ReadToEndAsync();
+            var stderr = await proc.StandardError.ReadToEndAsync();
+            await proc.WaitForExitAsync();
+
+            restore.Log += $"INF: {infFile}{Environment.NewLine}{stdout}{Environment.NewLine}{stderr}{Environment.NewLine}";
+            return proc.ExitCode;
         }
 
         public async Task<IReadOnlyList<DriverRestore>> GetRestoreHistoryAsync()

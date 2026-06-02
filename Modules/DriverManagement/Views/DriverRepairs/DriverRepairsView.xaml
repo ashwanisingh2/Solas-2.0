@@ -5,7 +5,18 @@
     <Grid Margin="12">
         <StackPanel>
             <TextBlock Text="Windows Repair" FontSize="20" Margin="0,0,0,12" />
-            <Button Content="Run Full Repair (SFC + DISM + ResetWU)" Width="300" Height="36" Command="{Binding RunFullRepairCommand}" />
+            <TextBlock Text="Run as Administrator for repair actions." Margin="0,0,0,12" />
+            <WrapPanel Margin="0,0,0,12">
+                <Button Content="SFC /scannow" Width="140" Height="36" Margin="0,0,8,8" Command="{Binding RunSfcCommand}" />
+                <Button Content="DISM RestoreHealth" Width="160" Height="36" Margin="0,0,8,8" Command="{Binding RunDismCommand}" />
+                <Button Content="Reset Windows Update" Width="180" Height="36" Margin="0,0,8,8" Command="{Binding ResetWindowsUpdateCommand}" />
+                <Button Content="Reset Network" Width="140" Height="36" Margin="0,0,8,8" Command="{Binding ResetNetworkCommand}" />
+                <Button Content="Flush DNS" Width="120" Height="36" Margin="0,0,8,8" Command="{Binding FlushDnsCommand}" />
+                <Button Content="Reset Printer" Width="130" Height="36" Margin="0,0,8,8" Command="{Binding ResetPrinterCommand}" />
+                <Button Content="Clean Temp" Width="120" Height="36" Margin="0,0,8,8" Command="{Binding CleanTempCommand}" />
+                <Button Content="Full Repair" Width="120" Height="36" Margin="0,0,8,8" Command="{Binding RunFullRepairCommand}" />
+            </WrapPanel>
+            <TextBlock Text="Running..." Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}" Margin="0,0,0,8" />
             <TextBox Text="{Binding LastOutput}" Margin="0,12,0,0" AcceptsReturn="True" Height="400" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" />
         </StackPanel>
     </Grid>

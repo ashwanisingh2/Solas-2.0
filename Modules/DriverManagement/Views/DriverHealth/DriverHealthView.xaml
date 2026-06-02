@@ -22,7 +22,9 @@
             <TextBlock Text="{Binding CriticalDrivers}" FontWeight="Bold" Margin="4,0,12,0" />
         </StackPanel>
 
-        <DataGrid ItemsSource="{Binding Drivers}" AutoGenerateColumns="False" IsReadOnly="True">
+        <TextBlock Text="{Binding Summary}" Grid.Row="1" Margin="0,42,0,8" />
+
+        <DataGrid ItemsSource="{Binding Drivers}" AutoGenerateColumns="False" IsReadOnly="True" Margin="0,72,0,0">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Device" Binding="{Binding DeviceName}" Width="*" />
                 <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" />

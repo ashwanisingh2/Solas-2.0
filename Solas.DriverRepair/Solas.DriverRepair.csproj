@@ -19,15 +19,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="**\*.cs" />
-    <Page Include="**\*.xaml" />
+    <Compile Include="..\Modules\DriverManagement\**\*.cs"
+             Link="Modules\DriverManagement\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Page Include="..\Modules\DriverManagement\Views\**\*.xaml"
+          Link="Modules\DriverManagement\Views\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Modules\DriverManagement\Data\**\*.*">
+    <Content Include="..\Modules\DriverManagement\Data\**\*.*"
+             Link="Modules\DriverManagement\Data\%(RecursiveDir)%(Filename)%(Extension)"
+             TargetPath="Modules\DriverManagement\Data\%(RecursiveDir)%(Filename)%(Extension)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Modules\DriverManagement\Scripts\**\*.*">
+    <Content Include="..\Modules\DriverManagement\Scripts\**\*.*"
+             Link="Modules\DriverManagement\Scripts\%(RecursiveDir)%(Filename)%(Extension)"
+             TargetPath="Modules\DriverManagement\Scripts\%(RecursiveDir)%(Filename)%(Extension)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

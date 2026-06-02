@@ -56,16 +56,14 @@ namespace Modules.DriverManagement.ViewModels
 
                 if (!File.Exists(DatabasePath))
                 {
-                    // create empty SQLite database and apply schema if available
-                    System.Data.SQLite.SQLiteConnection.CreateFile(DatabasePath);
-
-                    // If schema.sql exists in module data, apply it
+                    // Opening a Microsoft.Data.Sqlite connection creates the database file.
                     var schemaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Modules", "DriverManagement", "Data", "schema.sql");
+                    using var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={DatabasePath}");
+                    await conn.OpenAsync();
+
                     if (File.Exists(schemaPath))
                     {
                         var sql = File.ReadAllText(schemaPath);
-                        using var conn = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={DatabasePath}");
-                        await conn.OpenAsync();
                         using var cmd = conn.CreateCommand();
                         cmd.CommandText = sql;
                         await cmd.ExecuteNonQueryAsync();

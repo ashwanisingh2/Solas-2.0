@@ -12,10 +12,13 @@
             <Button Content="Refresh" Command="{Binding RefreshCommand}" Width="100" Margin="12,0,0,0" />
         </StackPanel>
 
-        <DataGrid ItemsSource="{Binding Reports}" AutoGenerateColumns="False" IsReadOnly="True">
+        <TextBlock Text="{Binding StatusMessage}" Margin="0,42,0,8" />
+
+        <DataGrid ItemsSource="{Binding Reports}" AutoGenerateColumns="False" IsReadOnly="True" Margin="0,72,0,0">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Date" Binding="{Binding GeneratedAt}" Width="150" />
                 <DataGridTextColumn Header="Format" Binding="{Binding Format}" Width="80" />
+                <DataGridTextColumn Header="Success" Binding="{Binding Success}" Width="80" />
                 <DataGridTextColumn Header="Path" Binding="{Binding FilePath}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>

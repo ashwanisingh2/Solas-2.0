@@ -21,6 +21,7 @@ namespace Modules.DriverManagement.Views
             _services = services;
             InitializeComponent();
             WireButtons();
+            NavigateToDashboard();
         }
 
         private void WireButtons()
@@ -32,7 +33,7 @@ namespace Modules.DriverManagement.Views
             BtnRestore.Click += (_, __) => NavigateToRestore();
             BtnReports.Click += (_, __) => NavigateToReports();
             BtnDiagnostics.Click += (_, __) => NavigateToDiagnostics();
-                BtnRepairs.Click += (_, __) => NavigateToRepairs();
+            BtnRepairs.Click += (_, __) => NavigateToRepairs();
             BtnSettings.Click += (_, __) => NavigateToSettings();
         }
 

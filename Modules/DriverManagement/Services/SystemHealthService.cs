@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Modules.DriverManagement.Interfaces;
 using Modules.DriverManagement.Models;
 using System.IO;
-using System.Drawing.Printing;
+using System.Management;
 
 namespace Modules.DriverManagement.Services
 {
-    public class SystemHealthService : ISystemHealthService
+    public partial class SystemHealthService : ISystemHealthService
     {
         public Task<SystemHealth> GetSystemHealthAsync(CancellationToken cancellationToken = default)
         {
@@ -70,7 +70,8 @@ namespace Modules.DriverManagement.Services
 
             try
             {
-                info.InstalledPrinters = PrinterSettings.InstalledPrinters.Count;
+                using var searcher = new ManagementObjectSearcher("SELECT Name FROM Win32_Printer");
+                info.InstalledPrinters = searcher.Get().Count;
             }
             catch
             {
@@ -100,6 +101,8 @@ namespace Modules.DriverManagement.Services
     }
 }
 
+namespace Modules.DriverManagement.Services
+{
     // P/Invoke helpers
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     internal class MEMORYSTATUSEX
@@ -133,7 +136,7 @@ namespace Modules.DriverManagement.Services
         public uint dwHighDateTime;
     }
 
-    internal partial class SystemHealthService
+    public partial class SystemHealthService
     {
         private static bool GlobalMemoryStatusEx(MEMORYSTATUSEX ms)
         {
@@ -164,3 +167,4 @@ namespace Modules.DriverManagement.Services
             return true;
         }
     }
+}

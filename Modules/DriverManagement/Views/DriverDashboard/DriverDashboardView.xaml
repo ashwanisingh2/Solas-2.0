@@ -97,7 +97,7 @@
                 <DataGridTextColumn Header="Hardware ID" Binding="{Binding HardwareId}" Width="200" />
                 <DataGridTextColumn Header="Update" Width="120">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="UpdateAvailable" StringFormat="{0}" />
+                        <Binding Path="UpdateAvailable" StringFormat="{}{0}" />
                     </DataGridTextColumn.Binding>
                 </DataGridTextColumn>
             </DataGrid.Columns>

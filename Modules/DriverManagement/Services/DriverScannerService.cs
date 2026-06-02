@@ -35,26 +35,27 @@ namespace Modules.DriverManagement.Services
                         {
                             var driver = new Driver
                             {
-                                DeviceName = (obj["DeviceName"]?.ToString()) ?? (obj["FriendlyName"]?.ToString()) ?? string.Empty,
-                                Vendor = obj["Manufacturer"]?.ToString(),
-                                ProviderName = obj["ProviderName"]?.ToString(),
-                                DriverVersion = obj["DriverVersion"]?.ToString(),
-                                Status = obj["Status"]?.ToString(),
-                                HardwareId = obj["HardwareId"] is string[] h ? string.Join(";", h) : obj["HardwareId"]?.ToString(),
-                                PnpDeviceId = obj["DeviceID"]?.ToString(),
-                                InfName = obj["InfName"]?.ToString(),
-                                IsSigned = obj["IsSigned"] is bool b && b,
+                                DeviceName = GetString(obj, "DeviceName") ?? GetString(obj, "FriendlyName") ?? string.Empty,
+                                Vendor = GetString(obj, "Manufacturer"),
+                                ProviderName = GetString(obj, "ProviderName"),
+                                DriverVersion = GetString(obj, "DriverVersion"),
+                                Status = GetString(obj, "Status"),
+                                HardwareId = GetString(obj, "HardwareId"),
+                                PnpDeviceId = GetString(obj, "DeviceID"),
+                                InfName = GetString(obj, "InfName"),
+                                IsSigned = GetBool(obj, "IsSigned"),
                             };
 
-                            if (obj["DriverDate"] != null)
+                            var driverDate = GetString(obj, "DriverDate");
+                            if (driverDate != null)
                             {
-                                if (DateTime.TryParse(obj["DriverDate"].ToString(), out var dt))
+                                if (DateTime.TryParse(driverDate, out var dt))
                                 {
                                     driver.DriverDate = dt;
                                 }
                                 else
                                 {
-                                    var s = obj["DriverDate"].ToString();
+                                    var s = driverDate;
                                     if (s.Length >= 8 && int.TryParse(s.Substring(0, 8), out _))
                                     {
                                         if (DateTime.TryParseExact(s.Substring(0, 8), "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out var d2))
@@ -99,6 +100,38 @@ namespace Modules.DriverManagement.Services
             }
 
             return null;
+        }
+
+        private static string? GetString(ManagementObject obj, string propertyName)
+        {
+            try
+            {
+                var property = obj.Properties[propertyName];
+                var value = property?.Value;
+                return value switch
+                {
+                    null => null,
+                    string[] values => string.Join(";", values),
+                    _ => value.ToString()
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static bool GetBool(ManagementObject obj, string propertyName)
+        {
+            try
+            {
+                var value = obj.Properties[propertyName]?.Value;
+                return value is bool b && b;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

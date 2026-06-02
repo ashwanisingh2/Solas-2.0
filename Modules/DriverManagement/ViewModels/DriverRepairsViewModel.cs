@@ -9,14 +9,41 @@ namespace Modules.DriverManagement.ViewModels
     public class DriverRepairsViewModel : Infrastructure.BaseViewModel
     {
         private readonly IRepairService _repairService;
+        private bool _isRunning;
 
         public DriverRepairsViewModel(IRepairService repairService)
         {
             _repairService = repairService;
-            RunFullRepairCommand = new AsyncRelayCommand(RunFullRepairAsync);
+            RunFullRepairCommand = new AsyncRelayCommand(() => RunRepairAsync("repair_windows.ps1"), () => !IsRunning);
+            RunSfcCommand = new AsyncRelayCommand(() => RunRepairAsync("repair_sfc.ps1"), () => !IsRunning);
+            RunDismCommand = new AsyncRelayCommand(() => RunRepairAsync("repair_dism.ps1"), () => !IsRunning);
+            ResetWindowsUpdateCommand = new AsyncRelayCommand(() => RunRepairAsync("repair_windows_update.ps1"), () => !IsRunning);
+            ResetNetworkCommand = new AsyncRelayCommand(() => RunRepairAsync("repair_network.ps1"), () => !IsRunning);
+            FlushDnsCommand = new AsyncRelayCommand(() => RunRepairAsync("repair_dns.ps1"), () => !IsRunning);
+            ResetPrinterCommand = new AsyncRelayCommand(() => RunRepairAsync("repair_printer.ps1"), () => !IsRunning);
+            CleanTempCommand = new AsyncRelayCommand(() => RunRepairAsync("repair_temp_cleanup.ps1"), () => !IsRunning);
         }
 
         public ICommand RunFullRepairCommand { get; }
+        public ICommand RunSfcCommand { get; }
+        public ICommand RunDismCommand { get; }
+        public ICommand ResetWindowsUpdateCommand { get; }
+        public ICommand ResetNetworkCommand { get; }
+        public ICommand FlushDnsCommand { get; }
+        public ICommand ResetPrinterCommand { get; }
+        public ICommand CleanTempCommand { get; }
+
+        public bool IsRunning
+        {
+            get => _isRunning;
+            set
+            {
+                if (SetProperty(ref _isRunning, value))
+                {
+                    RaiseCommandStates();
+                }
+            }
+        }
 
         private string _lastOutput = string.Empty;
         public string LastOutput
@@ -25,10 +52,33 @@ namespace Modules.DriverManagement.ViewModels
             set => SetProperty(ref _lastOutput, value);
         }
 
-        private async Task RunFullRepairAsync()
+        private async Task RunRepairAsync(string scriptName)
         {
-            var res = await _repairService.RunRepairAsync("repair_windows.ps1");
-            LastOutput = (res.Success ? "SUCCESS:\n" : "FAIL:\n") + res.Output + "\nERRORS:\n" + res.Error;
+            if (IsRunning) return;
+
+            try
+            {
+                IsRunning = true;
+                LastOutput = $"Running {scriptName}...";
+                var res = await _repairService.RunRepairAsync(scriptName);
+                LastOutput = (res.Success ? "SUCCESS:\n" : "FAIL:\n") + res.Output + "\nERRORS:\n" + res.Error;
+            }
+            finally
+            {
+                IsRunning = false;
+            }
+        }
+
+        private void RaiseCommandStates()
+        {
+            ((AsyncRelayCommand)RunFullRepairCommand).RaiseCanExecuteChanged();
+            ((AsyncRelayCommand)RunSfcCommand).RaiseCanExecuteChanged();
+            ((AsyncRelayCommand)RunDismCommand).RaiseCanExecuteChanged();
+            ((AsyncRelayCommand)ResetWindowsUpdateCommand).RaiseCanExecuteChanged();
+            ((AsyncRelayCommand)ResetNetworkCommand).RaiseCanExecuteChanged();
+            ((AsyncRelayCommand)FlushDnsCommand).RaiseCanExecuteChanged();
+            ((AsyncRelayCommand)ResetPrinterCommand).RaiseCanExecuteChanged();
+            ((AsyncRelayCommand)CleanTempCommand).RaiseCanExecuteChanged();
         }
     }
 }

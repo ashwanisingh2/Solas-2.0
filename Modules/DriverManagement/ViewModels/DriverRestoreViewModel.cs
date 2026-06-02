@@ -18,6 +18,9 @@ namespace Modules.DriverManagement.ViewModels
         private bool _isRestoring;
         public bool IsRestoring { get => _isRestoring; set => SetProperty(ref _isRestoring, value); }
 
+        private string? _statusMessage;
+        public string? StatusMessage { get => _statusMessage; set => SetProperty(ref _statusMessage, value); }
+
         public ICommand RestoreFromFolderCommand { get; }
         public ICommand RefreshHistoryCommand { get; }
 
@@ -37,6 +40,11 @@ namespace Modules.DriverManagement.ViewModels
                 var src = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DriverBackups");
                 var result = await _restoreService.RestoreDriversAsync(src, new int[0]);
                 History.Insert(0, result);
+                StatusMessage = result.Success ? "Restore completed." : result.Log;
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = ex.Message;
             }
             finally
             {

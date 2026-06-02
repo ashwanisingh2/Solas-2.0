@@ -10,7 +10,9 @@
             <Button Content="Refresh History" Command="{Binding RefreshHistoryCommand}" Width="120" Margin="8,0,0,0" />
         </StackPanel>
 
-        <DataGrid ItemsSource="{Binding History}" AutoGenerateColumns="False" IsReadOnly="True">
+        <TextBlock Text="{Binding StatusMessage}" Margin="0,42,0,8" />
+
+        <DataGrid ItemsSource="{Binding History}" AutoGenerateColumns="False" IsReadOnly="True" Margin="0,72,0,0">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Date" Binding="{Binding RestoreDate}" Width="150" />
                 <DataGridTextColumn Header="Source" Binding="{Binding SourcePath}" Width="*" />

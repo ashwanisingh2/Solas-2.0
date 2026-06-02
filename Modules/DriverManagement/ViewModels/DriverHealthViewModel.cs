@@ -10,6 +10,7 @@ namespace Modules.DriverManagement.ViewModels
 {
     public class DriverHealthViewModel : BaseViewModel
     {
+        private readonly IDriverScanner _scanner;
         private readonly IDriverHealthAnalyzer _analyzer;
 
         public ObservableCollection<Driver> Drivers { get; } = new ObservableCollection<Driver>();
@@ -37,8 +38,9 @@ namespace Modules.DriverManagement.ViewModels
 
         public ICommand AnalyzeCommand { get; }
 
-        public DriverHealthViewModel(IDriverHealthAnalyzer analyzer)
+        public DriverHealthViewModel(IDriverScanner scanner, IDriverHealthAnalyzer analyzer)
         {
+            _scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
             _analyzer = analyzer ?? throw new ArgumentNullException(nameof(analyzer));
             AnalyzeCommand = new AsyncRelayCommand(ExecuteAnalyzeAsync);
         }
@@ -49,7 +51,10 @@ namespace Modules.DriverManagement.ViewModels
             try
             {
                 IsAnalyzing = true;
-                var list = Drivers;
+                var list = await _scanner.ScanInstalledDriversAsync(true);
+                Drivers.Clear();
+                foreach (var driver in list) Drivers.Add(driver);
+
                 var result = await _analyzer.AnalyzeAsync(list);
                 TotalDrivers = result.Total;
                 HealthyDrivers = result.Healthy;
@@ -57,6 +62,10 @@ namespace Modules.DriverManagement.ViewModels
                 CriticalDrivers = result.Critical;
                 HealthScore = result.HealthScore;
                 Summary = result.Summary;
+            }
+            catch (Exception ex)
+            {
+                Summary = ex.Message;
             }
             finally
             {

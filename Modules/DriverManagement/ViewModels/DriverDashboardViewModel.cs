@@ -60,6 +60,9 @@ namespace Modules.DriverManagement.ViewModels
         private bool _isRefreshing;
         public bool IsRefreshing { get => _isRefreshing; set => SetProperty(ref _isRefreshing, value); }
 
+        private bool _autoRefresh;
+        public bool AutoRefresh { get => _autoRefresh; set => SetProperty(ref _autoRefresh, value); }
+
         public ICommand RefreshCommand { get; }
         public ICommand StartAutoRefreshCommand { get; }
         public ICommand StopAutoRefreshCommand { get; }

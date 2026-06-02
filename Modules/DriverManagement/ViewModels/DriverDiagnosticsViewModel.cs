@@ -14,6 +14,9 @@ namespace Modules.DriverManagement.ViewModels
 
         public ObservableCollection<DriverDiagnostics> Diagnostics { get; } = new ObservableCollection<DriverDiagnostics>();
 
+        private string? _statusMessage;
+        public string? StatusMessage { get => _statusMessage; set => SetProperty(ref _statusMessage, value); }
+
         public ICommand AnalyzeCommand { get; }
         public ICommand RefreshHistoryCommand { get; }
 
@@ -26,9 +29,17 @@ namespace Modules.DriverManagement.ViewModels
 
         private async Task ExecuteAnalyzeAsync()
         {
-            var list = await _diagnosticsService.AnalyzeEventLogsAsync();
-            Diagnostics.Clear();
-            foreach (var d in list) Diagnostics.Add(d);
+            try
+            {
+                var list = await _diagnosticsService.AnalyzeEventLogsAsync();
+                Diagnostics.Clear();
+                foreach (var d in list) Diagnostics.Add(d);
+                StatusMessage = $"Loaded {list.Count} diagnostic events.";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = ex.Message;
+            }
         }
 
         private async Task ExecuteRefreshHistoryAsync()

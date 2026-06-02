@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Modules.DriverManagement.Infrastructure;
 using Modules.DriverManagement.Interfaces;
 using Modules.DriverManagement.Models;
 

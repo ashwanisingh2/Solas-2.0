@@ -9,6 +9,7 @@ namespace Modules.DriverManagement.Models
         public DateTime GeneratedAt { get; set; }
         public string Format { get; set; } = "CSV"; // CSV, JSON, PDF
         public string FilePath { get; set; } = string.Empty;
+        public bool Success { get; set; }
         public string? ParametersJson { get; set; }
 
         public DriverReport()

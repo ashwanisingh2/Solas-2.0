@@ -26,8 +26,8 @@ namespace Modules.DriverManagement.Services
 
                 try
                 {
-                    // Query the System log for driver related events (source contains 'Driver' or provider is 'Microsoft-Windows-Kernel-PnP')
-                    var q = new EventLogQuery("System", PathType.LogName, "*[System/Provider/@Name='Microsoft-Windows-Kernel-PnP' or contains(System/Provider/@Name, 'Driver')] ");
+                    var query = "*[System[Provider[@Name='Microsoft-Windows-Kernel-PnP'] or Provider[@Name='Microsoft-Windows-UserPnp'] or EventID=219]]";
+                    var q = new EventLogQuery("System", PathType.LogName, query);
                     using var reader = new EventLogReader(q);
                     for (EventRecord eventInstance = reader.ReadEvent(); eventInstance != null; eventInstance = reader.ReadEvent())
                     {
