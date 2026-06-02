@@ -1,7 +1,11 @@
 <Application x:Class="Solas.DriverRepair.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Modules.DriverManagement.Infrastructure"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
+        <ResourceDictionary>
+            <converters:BooleanToVisibilityConverter x:Key="BoolToVis" />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

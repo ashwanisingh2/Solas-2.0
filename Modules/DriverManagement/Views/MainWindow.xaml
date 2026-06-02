@@ -11,6 +11,7 @@
             <Button Content="Restore" Name="BtnRestore" Margin="8" />
             <Button Content="Reports" Name="BtnReports" Margin="8" />
             <Button Content="Diagnostics" Name="BtnDiagnostics" Margin="8" />
+            <Button Content="Repairs" Name="BtnRepairs" Margin="8" />
             <Button Content="Settings" Name="BtnSettings" Margin="8" />
         </StackPanel>
 

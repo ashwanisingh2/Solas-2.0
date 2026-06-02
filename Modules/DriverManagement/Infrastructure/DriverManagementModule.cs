@@ -18,6 +18,10 @@ namespace Modules.DriverManagement.Infrastructure
             services.AddSingleton<IDriverRestoreService>(sp => new DriverRestoreService(databasePath));
             services.AddSingleton<IDriverReportService>(sp => new DriverReportService(databasePath));
             services.AddSingleton<IDriverDiagnosticsService>(sp => new DriverDiagnosticsService(databasePath));
+            // Database initializer
+            services.AddSingleton<Interfaces.IDatabaseInitializer>(sp => new Services.DatabaseInitializer(databasePath));
+            // Repair orchestration
+            services.AddSingleton<Interfaces.IRepairService>(sp => new Services.RepairService(databasePath));
 
             // ViewModels
             services.AddTransient<DriverDashboardViewModel>();
@@ -27,6 +31,7 @@ namespace Modules.DriverManagement.Infrastructure
             services.AddTransient<DriverRestoreViewModel>();
             services.AddTransient<DriverReportsViewModel>();
             services.AddTransient<DriverDiagnosticsViewModel>();
+            services.AddTransient<ViewModels.DriverRepairsViewModel>();
             services.AddSingleton<DriverSettingsViewModel>();
 
             return services;

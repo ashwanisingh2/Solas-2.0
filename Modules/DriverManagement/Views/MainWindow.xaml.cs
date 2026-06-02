@@ -32,6 +32,7 @@ namespace Modules.DriverManagement.Views
             BtnRestore.Click += (_, __) => NavigateToRestore();
             BtnReports.Click += (_, __) => NavigateToReports();
             BtnDiagnostics.Click += (_, __) => NavigateToDiagnostics();
+                BtnRepairs.Click += (_, __) => NavigateToRepairs();
             BtnSettings.Click += (_, __) => NavigateToSettings();
         }
 
@@ -81,6 +82,13 @@ namespace Modules.DriverManagement.Views
         {
             var vm = _services.GetRequiredService<ViewModels.DriverDiagnosticsViewModel>();
             var view = new DriverDiagnosticsView { DataContext = vm };
+            MainHost.Content = view;
+        }
+
+        private void NavigateToRepairs()
+        {
+            var vm = _services.GetRequiredService<ViewModels.DriverRepairsViewModel>();
+            var view = new Modules.DriverManagement.Views.DriverRepairs.DriverRepairsView { DataContext = vm };
             MainHost.Content = view;
         }
 

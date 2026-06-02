@@ -28,6 +28,20 @@ namespace Solas.DriverRepair
 
             await _host.StartAsync();
 
+            // Ensure database/schema exists
+            try
+            {
+                var dbInit = _host.Services.GetService<Modules.DriverManagement.Interfaces.IDatabaseInitializer>();
+                if (dbInit != null)
+                {
+                    await dbInit.EnsureCreatedAsync();
+                }
+            }
+            catch
+            {
+                // ignore - application can still run but DB-backed features may fail
+            }
+
             var mainWindow = _host.Services.GetRequiredService<Modules.DriverManagement.Views.MainWindow>();
             mainWindow.Show();
         }

@@ -1,0 +1,12 @@
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Modules.DriverManagement.Views.DriverRepairs.DriverRepairsView"
+             xmlns:vm="clr-namespace:Modules.DriverManagement.ViewModels">
+    <Grid Margin="12">
+        <StackPanel>
+            <TextBlock Text="Windows Repair" FontSize="20" Margin="0,0,0,12" />
+            <Button Content="Run Full Repair (SFC + DISM + ResetWU)" Width="300" Height="36" Command="{Binding RunFullRepairCommand}" />
+            <TextBox Text="{Binding LastOutput}" Margin="0,12,0,0" AcceptsReturn="True" Height="400" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" />
+        </StackPanel>
+    </Grid>
+</UserControl>
