@@ -4,32 +4,178 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="Modules.DriverManagement.Views.DriverHealth.DriverHealthView">
-    <Grid Margin="12">
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-            <Button Content="Analyze" Command="{Binding AnalyzeCommand}" Width="100" />
-            <TextBlock Text="Health Score:" Margin="12,0,4,0" VerticalAlignment="Center" />
-            <TextBlock Text="{Binding HealthScore}" FontWeight="Bold" VerticalAlignment="Center" />
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,24">
+            <TextBlock Text="Driver Health Analytics" Style="{StaticResource HeadingText}" />
+            <TextBlock Text="Perform a deep scan of system driver statuses, security digital signatures, and version dates." Style="{StaticResource SubHeadingText}" Margin="0,4,0,0" />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-            <TextBlock Text="Total:" />
-            <TextBlock Text="{Binding TotalDrivers}" FontWeight="Bold" Margin="4,0,12,0" />
-            <TextBlock Text="Healthy:" />
-            <TextBlock Text="{Binding HealthyDrivers}" FontWeight="Bold" Margin="4,0,12,0" />
-            <TextBlock Text="Warning:" />
-            <TextBlock Text="{Binding WarningDrivers}" FontWeight="Bold" Margin="4,0,12,0" />
-            <TextBlock Text="Critical:" />
-            <TextBlock Text="{Binding CriticalDrivers}" FontWeight="Bold" Margin="4,0,12,0" />
-        </StackPanel>
+        <!-- Stats Section -->
+        <Grid Grid.Row="1" Margin="0,0,0,24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <TextBlock Text="{Binding Summary}" Grid.Row="1" Margin="0,42,0,8" />
+            <!-- Score Widget Card -->
+            <Border Grid.Column="0" Background="{StaticResource CardBg}" CornerRadius="8" Padding="20" Margin="0,0,16,0" BorderBrush="#2C2C32" BorderThickness="1">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="Health Score" Foreground="{StaticResource TextSecondary}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding HealthScore}" Foreground="#7C4DFF" FontSize="48" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,8" />
+                    <TextBlock Text="Optimal Health" Foreground="#4CAF50" FontSize="11" HorizontalAlignment="Center" FontWeight="Medium">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HealthScore, ConverterParameter=90, Converter={StaticResource BoolToVis}}" Value="False">
+                                        <Setter Property="Text" Value="Attention Needed" />
+                                        <Setter Property="Foreground" Value="#FF9800" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
 
-        <DataGrid ItemsSource="{Binding Drivers}" AutoGenerateColumns="False" IsReadOnly="True" Margin="0,72,0,0">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Device" Binding="{Binding DeviceName}" Width="*" />
-                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" />
-                <DataGridTextColumn Header="Health" Binding="{Binding DriverVersion}" Width="100" />
-            </DataGrid.Columns>
-        </DataGrid>
+            <!-- Detailed Breakdown Cards -->
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Total -->
+                <Border Grid.Column="0" Background="{StaticResource CardBg}" CornerRadius="8" Padding="16" Margin="0,0,8,0" BorderBrush="#2C2C32" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Total Scanned" Foreground="{StaticResource TextSecondary}" FontSize="12" />
+                        <TextBlock Text="{Binding TotalDrivers}" Foreground="#FFFFFF" FontSize="28" FontWeight="Bold" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Healthy -->
+                <Border Grid.Column="1" Background="{StaticResource CardBg}" CornerRadius="8" Padding="16" Margin="8,0,8,0" BorderBrush="#2C2C32" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Healthy" Foreground="{StaticResource TextSecondary}" FontSize="12" />
+                        <TextBlock Text="{Binding HealthyDrivers}" Foreground="#4CAF50" FontSize="28" FontWeight="Bold" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Warnings -->
+                <Border Grid.Column="2" Background="{StaticResource CardBg}" CornerRadius="8" Padding="16" Margin="8,0,8,0" BorderBrush="#2C2C32" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Warnings" Foreground="{StaticResource TextSecondary}" FontSize="12" />
+                        <TextBlock Text="{Binding WarningDrivers}" Foreground="#FF9800" FontSize="28" FontWeight="Bold" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Critical -->
+                <Border Grid.Column="3" Background="{StaticResource CardBg}" CornerRadius="8" Padding="16" Margin="8,0,0,0" BorderBrush="#2C2C32" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Critical Errors" Foreground="{StaticResource TextSecondary}" FontSize="12" />
+                        <TextBlock Text="{Binding CriticalDrivers}" Foreground="#F44336" FontSize="28" FontWeight="Bold" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Driver DataGrid Section -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                <Button Content="Scan &amp; Analyze Health" Command="{Binding AnalyzeCommand}" Width="180" Height="32" Background="#7C4DFF" Foreground="#FFFFFF" />
+                <TextBlock Text="Analyzing system drivers..." Visibility="{Binding IsAnalyzing, Converter={StaticResource BoolToVis}}" Margin="16,0,0,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#7C4DFF" />
+            </StackPanel>
+
+            <DataGrid Grid.Row="1" ItemsSource="{Binding Drivers}" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="1" BorderBrush="#2A2A2E" Background="#1E1E22">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Device Name" Binding="{Binding DeviceName}" Width="*" />
+                    <DataGridTextColumn Header="Vendor" Binding="{Binding Vendor}" Width="180" />
+                    <DataGridTextColumn Header="Driver Version" Binding="{Binding DriverVersion}" Width="120" />
+                    <DataGridTextColumn Header="Date" Binding="{Binding DriverDate, StringFormat=\{0:yyyy-MM-dd\}}" Width="120" />
+                    
+                    <!-- Styled Status Dot Template -->
+                    <DataGridTemplateColumn Header="Status" Width="160">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Ellipse Width="8" Height="8" Margin="4,0,8,0">
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter Property="Fill" Value="#4CAF50" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSigned}" Value="False">
+                                                        <Setter Property="Fill" Value="#FF9800" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Status}" Value="Missing Driver (Error 28)">
+                                                        <Setter Property="Fill" Value="#F44336" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Status}" Value="Not Configured (Error 1)">
+                                                        <Setter Property="Fill" Value="#FF9800" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Status}" Value="Cannot Start (Error 10)">
+                                                        <Setter Property="Fill" Value="#F44336" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Status}" Value="Disabled (Error 22)">
+                                                        <Setter Property="Fill" Value="#F44336" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                    <TextBlock Text="{Binding Status}" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Digital Signature -->
+                    <DataGridTemplateColumn Header="Signature" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Padding="6,2" CornerRadius="4" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="#1A3322" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSigned}" Value="False">
+                                                    <Setter Property="Background" Value="#33221A" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock FontSize="11" FontWeight="SemiBold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="SIGNED" />
+                                                <Setter Property="Foreground" Value="#4CAF50" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSigned}" Value="False">
+                                                        <Setter Property="Text" Value="UNSIGNED" />
+                                                        <Setter Property="Foreground" Value="#FF9800" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
     </Grid>
 </UserControl>

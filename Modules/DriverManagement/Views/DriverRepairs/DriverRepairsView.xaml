@@ -6,7 +6,28 @@
         <StackPanel>
             <TextBlock Text="Windows Repair" FontSize="20" Margin="0,0,0,12" />
             <TextBlock Text="Run as Administrator for repair actions." Margin="0,0,0,12" />
+
+            <!-- Giant IObit Care Card -->
+            <Border Background="#1A1A1D" CornerRadius="8" Padding="20" Margin="0,0,0,16" BorderBrush="#3E2C85" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="One-Click System Care" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" />
+                        <TextBlock Text="Clean junk files, speed up internet, scan security, optimize disks, create a restore point, and auto-update drivers in one click." 
+                                   Foreground="#A0A0A5" Margin="0,4,0,0" TextWrapping="Wrap" />
+                    </StackPanel>
+                    
+                    <Button Grid.Column="1" Content="SCAN &amp; FIX" Command="{Binding OneClickCareCommand}" 
+                            Background="#7C4DFF" Foreground="#FFFFFF" Padding="24,12" FontSize="14" FontWeight="Bold" Height="46" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
             <WrapPanel Margin="0,0,0,12">
+                <Button Content="Create Restore Point" Width="150" Height="36" Margin="0,0,8,8" Command="{Binding CreateRestorePointCommand}" />
                 <Button Content="SFC /scannow" Width="140" Height="36" Margin="0,0,8,8" Command="{Binding RunSfcCommand}" />
                 <Button Content="DISM RestoreHealth" Width="160" Height="36" Margin="0,0,8,8" Command="{Binding RunDismCommand}" />
                 <Button Content="Reset Windows Update" Width="180" Height="36" Margin="0,0,8,8" Command="{Binding ResetWindowsUpdateCommand}" />
@@ -14,6 +35,12 @@
                 <Button Content="Flush DNS" Width="120" Height="36" Margin="0,0,8,8" Command="{Binding FlushDnsCommand}" />
                 <Button Content="Reset Printer" Width="130" Height="36" Margin="0,0,8,8" Command="{Binding ResetPrinterCommand}" />
                 <Button Content="Clean Temp" Width="120" Height="36" Margin="0,0,8,8" Command="{Binding CleanTempCommand}" />
+                <Button Content="BSOD Analyzer" Width="130" Height="36" Margin="0,0,8,8" Command="{Binding AnalyzeBsodCommand}" />
+                <Button Content="Battery Health" Width="130" Height="36" Margin="0,0,8,8" Command="{Binding DiagnoseBatteryCommand}" />
+                <Button Content="Malware Scanner" Width="140" Height="36" Margin="0,0,8,8" Command="{Binding ScanMalwareCommand}" />
+                <Button Content="Disk Health Check" Width="150" Height="36" Margin="0,0,8,8" Command="{Binding CheckDiskHealthCommand}" />
+                <Button Content="Optimize Performance" Width="170" Height="36" Margin="0,0,8,8" Command="{Binding OptimizePerformanceCommand}" />
+                <Button Content="Fix Drivers" Width="120" Height="36" Margin="0,0,8,8" Command="{Binding RepairDriversCommand}" />
                 <Button Content="Full Repair" Width="120" Height="36" Margin="0,0,8,8" Command="{Binding RunFullRepairCommand}" />
             </WrapPanel>
             <TextBlock Text="Running..." Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}" Margin="0,0,0,8" />

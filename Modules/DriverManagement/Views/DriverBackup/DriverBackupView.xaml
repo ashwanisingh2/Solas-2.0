@@ -5,12 +5,17 @@
              mc:Ignorable="d"
              x:Class="Modules.DriverManagement.Views.DriverBackup.DriverBackupView">
     <Grid Margin="12">
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-            <Button Content="Backup All" Command="{Binding BackupAllCommand}" Width="120" />
-            <Button Content="Refresh History" Command="{Binding RefreshHistoryCommand}" Width="120" Margin="8,0,0,0" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+            <Button Content="Backup All" Command="{Binding BackupAllCommand}" Width="120" Height="30" />
+            <Button Content="Refresh History" Command="{Binding RefreshHistoryCommand}" Width="120" Margin="8,0,0,0" Height="30" />
         </StackPanel>
 
-        <DataGrid ItemsSource="{Binding History}" AutoGenerateColumns="False" IsReadOnly="True">
+        <DataGrid Grid.Row="1" ItemsSource="{Binding History}" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Date" Binding="{Binding BackupDate}" Width="150" />
                 <DataGridTextColumn Header="Path" Binding="{Binding BackupPath}" Width="*" />

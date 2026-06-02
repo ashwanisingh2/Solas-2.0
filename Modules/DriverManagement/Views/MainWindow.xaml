@@ -1,20 +1,46 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="Modules.DriverManagement.Views.MainWindow"
-        Title="Driver Management" Height="800" Width="1200">
-    <DockPanel>
-        <StackPanel DockPanel.Dock="Left" Width="220" Background="#222" VerticalAlignment="Stretch">
-            <Button Content="Dashboard" Name="BtnDashboard" Margin="8" />
-            <Button Content="Scanner" Name="BtnScanner" Margin="8" />
-            <Button Content="Health" Name="BtnHealth" Margin="8" />
-            <Button Content="Backup" Name="BtnBackup" Margin="8" />
-            <Button Content="Restore" Name="BtnRestore" Margin="8" />
-            <Button Content="Reports" Name="BtnReports" Margin="8" />
-            <Button Content="Diagnostics" Name="BtnDiagnostics" Margin="8" />
-            <Button Content="Repairs" Name="BtnRepairs" Margin="8" />
-            <Button Content="Settings" Name="BtnSettings" Margin="8" />
-        </StackPanel>
+        Title="Solas System Repair &amp; Driver Tool" Height="800" Width="1250"
+        Background="{StaticResource MainBg}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-        <ContentControl Name="MainHost" />
-    </DockPanel>
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0" Background="{StaticResource SidebarBg}" BorderBrush="#222226" BorderThickness="0,0,1,0">
+            <DockPanel Margin="12,24,12,24">
+                <!-- App Title -->
+                <StackPanel DockPanel.Dock="Top" Margin="12,0,12,28">
+                    <TextBlock Text="SOLAS TOOL" FontSize="20" FontWeight="Black" Foreground="#7C4DFF" />
+                    <TextBlock Text="Repair &amp; Diagnostics" FontSize="11" Foreground="{StaticResource TextSecondary}" Margin="0,2,0,0" />
+                </StackPanel>
+
+                <!-- Footer Text -->
+                <TextBlock DockPanel.Dock="Bottom" Text="v2.0.0 Pro Edition" FontSize="10" Foreground="#55555A" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+
+                <!-- Navigation List -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Orientation="Vertical">
+                        <Button Content="Dashboard" Name="BtnDashboard" Style="{StaticResource SidebarButton}" Margin="0,2" />
+                        <Button Content="Driver Scanner" Name="BtnScanner" Style="{StaticResource SidebarButton}" Margin="0,2" />
+                        <Button Content="Driver Health" Name="BtnHealth" Style="{StaticResource SidebarButton}" Margin="0,2" />
+                        <Button Content="Driver Backup" Name="BtnBackup" Style="{StaticResource SidebarButton}" Margin="0,2" />
+                        <Button Content="Driver Restore" Name="BtnRestore" Style="{StaticResource SidebarButton}" Margin="0,2" />
+                        <Button Content="Reports &amp; Logs" Name="BtnReports" Style="{StaticResource SidebarButton}" Margin="0,2" />
+                        <Button Content="Event Diagnostics" Name="BtnDiagnostics" Style="{StaticResource SidebarButton}" Margin="0,2" />
+                        <Button Content="Advanced Repairs" Name="BtnRepairs" Style="{StaticResource SidebarButton}" Margin="0,2" />
+                        <Button Content="System Settings" Name="BtnSettings" Style="{StaticResource SidebarButton}" Margin="0,2" />
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- Main View Host Area -->
+        <Border Grid.Column="1" Background="{StaticResource MainBg}">
+            <ContentControl Name="MainHost" Margin="0" />
+        </Border>
+    </Grid>
 </Window>

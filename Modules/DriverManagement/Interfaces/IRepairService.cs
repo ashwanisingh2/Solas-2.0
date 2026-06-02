@@ -4,7 +4,7 @@ namespace Modules.DriverManagement.Interfaces
 {
     public interface IRepairService
     {
-        Task<RepairResult> RunRepairAsync(string scriptName);
+        Task<RepairResult> RunRepairAsync(string scriptName, string arguments = "");
     }
 
     public class RepairResult

@@ -3,11 +3,14 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Modules.DriverManagement.Infrastructure;
+using Modules.DriverManagement.Interfaces;
 
 namespace Modules.DriverManagement.ViewModels
 {
     public class DriverSettingsViewModel : BaseViewModel
     {
+        private readonly IRepairService _repairService;
+
         private string _databasePath;
         public string DatabasePath
         {
@@ -22,15 +25,143 @@ namespace Modules.DriverManagement.ViewModels
             set => SetProperty(ref _backupFolder, value);
         }
 
+        private bool _isWeeklyCareScheduled;
+        public bool IsWeeklyCareScheduled
+        {
+            get => _isWeeklyCareScheduled;
+            set => SetProperty(ref _isWeeklyCareScheduled, value);
+        }
+
+        private string? _scheduleStatusMessage;
+        public string? ScheduleStatusMessage
+        {
+            get => _scheduleStatusMessage;
+            set => SetProperty(ref _scheduleStatusMessage, value);
+        }
+
+        private bool _isSchedulingBusy;
+        public bool IsSchedulingBusy
+        {
+            get => _isSchedulingBusy;
+            set
+            {
+                if (SetProperty(ref _isSchedulingBusy, value))
+                {
+                    ((AsyncRelayCommand)ScheduleCareCommand).RaiseCanExecuteChanged();
+                    ((AsyncRelayCommand)UnscheduleCareCommand).RaiseCanExecuteChanged();
+                }
+            }
+        }
+
         public ICommand SaveCommand { get; }
         public ICommand EnsureDatabaseCommand { get; }
+        public ICommand ScheduleCareCommand { get; }
+        public ICommand UnscheduleCareCommand { get; }
 
-        public DriverSettingsViewModel()
+        public DriverSettingsViewModel(IRepairService repairService)
         {
+            _repairService = repairService ?? throw new ArgumentNullException(nameof(repairService));
+
             DatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Solas", "driver_management.db");
             BackupFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DriverBackups");
+            
             SaveCommand = new AsyncRelayCommand(ExecuteSaveAsync);
             EnsureDatabaseCommand = new AsyncRelayCommand(ExecuteEnsureDatabaseAsync);
+            ScheduleCareCommand = new AsyncRelayCommand(ExecuteScheduleCareAsync, () => !IsSchedulingBusy);
+            UnscheduleCareCommand = new AsyncRelayCommand(ExecuteUnscheduleCareAsync, () => !IsSchedulingBusy);
+
+            // Check scheduled status in background
+            Task.Run(async () =>
+            {
+                var scheduled = await IsTaskScheduledAsync();
+                System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                {
+                    IsWeeklyCareScheduled = scheduled;
+                    ScheduleStatusMessage = scheduled 
+                        ? "Weekly care scheduled: Sunday at 3:00 AM (SYSTEM context)." 
+                        : "Weekly care is currently disabled.";
+                });
+            });
+        }
+
+        private async Task<bool> IsTaskScheduledAsync()
+        {
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = "-NoProfile -ExecutionPolicy Bypass -Command \"Get-ScheduledTask -TaskName SolasDriverRepair_WeeklyCare\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+                using var proc = System.Diagnostics.Process.Start(psi);
+                if (proc == null) return false;
+                await proc.WaitForExitAsync();
+                return proc.ExitCode == 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private async Task ExecuteScheduleCareAsync()
+        {
+            if (IsSchedulingBusy) return;
+            IsSchedulingBusy = true;
+            ScheduleStatusMessage = "Scheduling weekly care task...";
+            try
+            {
+                var res = await _repairService.RunRepairAsync("schedule_care.ps1");
+                if (res.Success)
+                {
+                    IsWeeklyCareScheduled = true;
+                    ScheduleStatusMessage = "Weekly care scheduled successfully: Sunday at 3:00 AM.";
+                }
+                else
+                {
+                    ScheduleStatusMessage = $"Failed to schedule care: {res.Error}";
+                }
+            }
+            catch (Exception ex)
+            {
+                ScheduleStatusMessage = $"Error: {ex.Message}";
+            }
+            finally
+            {
+                IsSchedulingBusy = false;
+            }
+        }
+
+        private async Task ExecuteUnscheduleCareAsync()
+        {
+            if (IsSchedulingBusy) return;
+            IsSchedulingBusy = true;
+            ScheduleStatusMessage = "Removing weekly care task...";
+            try
+            {
+                var res = await _repairService.RunRepairAsync("unschedule_care.ps1");
+                if (res.Success)
+                {
+                    IsWeeklyCareScheduled = false;
+                    ScheduleStatusMessage = "Weekly care task removed successfully.";
+                }
+                else
+                {
+                    ScheduleStatusMessage = $"Failed to remove task: {res.Error}";
+                }
+            }
+            catch (Exception ex)
+            {
+                ScheduleStatusMessage = $"Error: {ex.Message}";
+            }
+            finally
+            {
+                IsSchedulingBusy = false;
+            }
         }
 
         private Task ExecuteSaveAsync()

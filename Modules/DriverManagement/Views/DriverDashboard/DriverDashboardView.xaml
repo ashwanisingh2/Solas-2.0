@@ -12,82 +12,113 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <!-- Top Actions Panel -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,12">
-            <Button Content="Refresh" Command="{Binding RefreshCommand}" Width="100" Margin="0,0,8,0" />
-            <Button Content="Start Auto" Command="{Binding StartAutoRefreshCommand}" Width="100" Margin="0,0,8,0" />
-            <Button Content="Stop Auto" Command="{Binding StopAutoRefreshCommand}" Width="100" Margin="0,0,8,0" />
-            <TextBlock Text="Health Score:" VerticalAlignment="Center" Margin="8,0,4,0" />
-            <TextBlock Text="{Binding HealthScore}" VerticalAlignment="Center" FontWeight="Bold" />
-            <TextBlock Text="Refreshing..." Foreground="DarkBlue" FontWeight="Bold" Margin="12,0,0,0" Visibility="{Binding IsRefreshing, Converter={StaticResource BoolToVis}}" />
+            <Button Content="Refresh Dashboard" Command="{Binding RefreshCommand}" Width="150" Margin="0,0,8,0" Height="30" />
+            <Button Content="Start Auto Refresh" Command="{Binding StartAutoRefreshCommand}" Width="150" Margin="0,0,8,0" Height="30" />
+            <Button Content="Stop Auto Refresh" Command="{Binding StopAutoRefreshCommand}" Width="150" Margin="0,0,8,0" Height="30" />
+            <TextBlock Text="System Health Score:" VerticalAlignment="Center" Margin="12,0,4,0" Foreground="{StaticResource TextSecondary}" />
+            <TextBlock Text="{Binding HealthScore}" VerticalAlignment="Center" FontWeight="Bold" Foreground="#FFFFFF" FontSize="14" />
+            <TextBlock Text="Updating metrics..." Foreground="#7C4DFF" FontWeight="Bold" Margin="12,0,0,0" Visibility="{Binding IsRefreshing, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" />
         </StackPanel>
 
+        <!-- Top Alert Stats Cards -->
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,12">
-            <Border Background="#FFEEF8" Padding="12" Margin="0,0,8,0" CornerRadius="4">
+            <Border Background="#1E1E22" Padding="14" Margin="0,0,10,0" CornerRadius="6" BorderBrush="#2E2E33" BorderThickness="1" Width="180">
                 <StackPanel>
-                    <TextBlock Text="Total Drivers" Foreground="#333" />
-                    <TextBlock Text="{Binding TotalDrivers}" FontSize="18" FontWeight="Bold" />
+                    <TextBlock Text="TOTAL DRIVERS" Foreground="{StaticResource TextSecondary}" FontSize="10" FontWeight="Bold" />
+                    <TextBlock Text="{Binding TotalDrivers}" FontSize="22" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0" />
                 </StackPanel>
             </Border>
-            <Border Background="#E8FFF0" Padding="12" Margin="0,0,8,0" CornerRadius="4">
+            <Border Background="#1E1E22" Padding="14" Margin="0,0,10,0" CornerRadius="6" BorderBrush="#1B5E20" BorderThickness="1" Width="180">
                 <StackPanel>
-                    <TextBlock Text="Healthy" Foreground="#333" />
-                    <TextBlock Text="{Binding HealthyDrivers}" FontSize="18" FontWeight="Bold" />
+                    <TextBlock Text="HEALTHY DRIVERS" Foreground="#81C784" FontSize="10" FontWeight="Bold" />
+                    <TextBlock Text="{Binding HealthyDrivers}" FontSize="22" FontWeight="Bold" Foreground="#4CAF50" Margin="0,4,0,0" />
                 </StackPanel>
             </Border>
-            <Border Background="#FFF7E8" Padding="12" Margin="0,0,8,0" CornerRadius="4">
+            <Border Background="#1E1E22" Padding="14" Margin="0,0,10,0" CornerRadius="6" BorderBrush="#E65100" BorderThickness="1" Width="180">
                 <StackPanel>
-                    <TextBlock Text="Warning" Foreground="#333" />
-                    <TextBlock Text="{Binding WarningDrivers}" FontSize="18" FontWeight="Bold" />
+                    <TextBlock Text="WARNING STATUS" Foreground="#FFB74D" FontSize="10" FontWeight="Bold" />
+                    <TextBlock Text="{Binding WarningDrivers}" FontSize="22" FontWeight="Bold" Foreground="#FF9800" Margin="0,4,0,0" />
                 </StackPanel>
             </Border>
-            <Border Background="#FFECEC" Padding="12" CornerRadius="4">
+            <Border Background="#1E1E22" Padding="14" CornerRadius="6" BorderBrush="#B71C1C" BorderThickness="1" Width="180">
                 <StackPanel>
-                    <TextBlock Text="Critical" Foreground="#333" />
-                    <TextBlock Text="{Binding CriticalDrivers}" FontSize="18" FontWeight="Bold" />
-                </StackPanel>
-            </Border>
-        </StackPanel>
-
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,12">
-            <Border Background="#F0F7FF" Padding="12" Margin="0,0,8,0" CornerRadius="4">
-                <StackPanel>
-                    <TextBlock Text="CPU %" Foreground="#333" />
-                    <TextBlock Text="{Binding CpuPercentage}" FontWeight="Bold" />
-                </StackPanel>
-            </Border>
-            <Border Background="#F7FFF0" Padding="12" Margin="0,0,8,0" CornerRadius="4">
-                <StackPanel>
-                    <TextBlock Text="Memory (MB)" Foreground="#333" />
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding FreeMemoryMb}" FontWeight="Bold" />
-                        <TextBlock Text=" / " Margin="4,0" />
-                        <TextBlock Text="{Binding TotalMemoryMb}" FontWeight="Bold" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-            <Border Background="#FFF7F0" Padding="12" Margin="0,0,8,0" CornerRadius="4">
-                <StackPanel>
-                    <TextBlock Text="Disk (MB)" Foreground="#333" />
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding DiskFreeMb}" FontWeight="Bold" />
-                        <TextBlock Text=" / " Margin="4,0" />
-                        <TextBlock Text="{Binding DiskTotalMb}" FontWeight="Bold" />
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-            <Border Background="#F0FFF7" Padding="12" CornerRadius="4">
-                <StackPanel>
-                    <TextBlock Text="Network" Foreground="#333" />
-                    <TextBlock Text="{Binding NetworkAvailable}" FontWeight="Bold" />
+                    <TextBlock Text="CRITICAL DRIVERS" Foreground="#E57373" FontSize="10" FontWeight="Bold" />
+                    <TextBlock Text="{Binding CriticalDrivers}" FontSize="22" FontWeight="Bold" Foreground="#F44336" Margin="0,4,0,0" />
                 </StackPanel>
             </Border>
         </StackPanel>
 
+        <!-- Live System Performance Graphs -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,16">
+            <!-- CPU Card -->
+            <Border Background="#1E1E22" Padding="14" Margin="0,0,10,0" CornerRadius="6" BorderBrush="#2E2E33" BorderThickness="1" Width="180">
+                <StackPanel>
+                    <TextBlock Text="CPU LOAD" Foreground="{StaticResource TextSecondary}" FontSize="10" FontWeight="Bold" />
+                    <TextBlock Text="{Binding CpuPercentage, StringFormat={}{0:F1}%}" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4" />
+                    <ProgressBar Value="{Binding CpuPercentage}" Height="6" Background="#2C2C30" Foreground="#00E5FF" BorderThickness="0" Minimum="0" Maximum="100" />
+                </StackPanel>
+            </Border>
+
+            <!-- Memory Card -->
+            <Border Background="#1E1E22" Padding="14" Margin="0,0,10,0" CornerRadius="6" BorderBrush="#2E2E33" BorderThickness="1" Width="220">
+                <StackPanel>
+                    <TextBlock Text="RAM UTILISED" Foreground="{StaticResource TextSecondary}" FontSize="10" FontWeight="Bold" />
+                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                        <TextBlock Text="{Binding FreeMemoryMb}" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" />
+                        <TextBlock Text=" MB free of " Foreground="{StaticResource TextSecondary}" FontSize="11" VerticalAlignment="Bottom" />
+                        <TextBlock Text="{Binding TotalMemoryMb}" FontSize="12" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Bottom" />
+                        <TextBlock Text=" MB" FontSize="11" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Bottom" />
+                    </StackPanel>
+                    <ProgressBar Value="{Binding MemoryUsedPercentage}" Height="6" Background="#2C2C30" Foreground="#7C4DFF" BorderThickness="0" Minimum="0" Maximum="100" />
+                </StackPanel>
+            </Border>
+
+            <!-- Disk Card -->
+            <Border Background="#1E1E22" Padding="14" Margin="0,0,10,0" CornerRadius="6" BorderBrush="#2E2E33" BorderThickness="1" Width="220">
+                <StackPanel>
+                    <TextBlock Text="DISK UTILISATION (C:)" Foreground="{StaticResource TextSecondary}" FontSize="10" FontWeight="Bold" />
+                    <StackPanel Orientation="Horizontal" Margin="0,4">
+                        <TextBlock Text="{Binding DiskFreeMb}" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" />
+                        <TextBlock Text=" MB free of " Foreground="{StaticResource TextSecondary}" FontSize="11" VerticalAlignment="Bottom" />
+                        <TextBlock Text="{Binding DiskTotalMb}" FontSize="12" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Bottom" />
+                        <TextBlock Text=" MB" FontSize="11" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Bottom" />
+                    </StackPanel>
+                    <ProgressBar Value="{Binding DiskUsedPercentage}" Height="6" Background="#2C2C30" Foreground="#FF9100" BorderThickness="0" Minimum="0" Maximum="100" />
+                </StackPanel>
+            </Border>
+
+            <!-- Network Card -->
+            <Border Background="#1E1E22" Padding="14" CornerRadius="6" BorderBrush="#2E2E33" BorderThickness="1" Width="180">
+                <StackPanel>
+                    <TextBlock Text="NETWORK ACCESS" Foreground="{StaticResource TextSecondary}" FontSize="10" FontWeight="Bold" />
+                    <TextBlock Text="{Binding NetworkAvailable}" FontSize="16" FontWeight="Bold" Foreground="#00E676" Margin="0,6,0,0" Height="22" VerticalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <Trigger Property="Text" Value="True">
+                                        <Setter Property="Text" Value="Online (Connected)" />
+                                        <Setter Property="Foreground" Value="#00E676" />
+                                    </Trigger>
+                                    <Trigger Property="Text" Value="False">
+                                        <Setter Property="Text" Value="Offline (No Connection)" />
+                                        <Setter Property="Foreground" Value="#FF1744" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Driver DataGrid List -->
         <DataGrid Grid.Row="3" ItemsSource="{Binding Drivers}" AutoGenerateColumns="False" IsReadOnly="True"
-              EnableRowVirtualization="True"
-              VirtualizingStackPanel.IsVirtualizing="True"
-              VirtualizingStackPanel.VirtualizationMode="Recycling"
-              IsSynchronizedWithCurrentItem="True">
+                  EnableRowVirtualization="True"
+                  VirtualizingStackPanel.IsVirtualizing="True"
+                  VirtualizingStackPanel.VirtualizationMode="Recycling"
+                  IsSynchronizedWithCurrentItem="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Device" Binding="{Binding DeviceName}" Width="*" />
                 <DataGridTextColumn Header="Vendor" Binding="{Binding Vendor}" Width="150" />
@@ -95,11 +126,7 @@
                 <DataGridTextColumn Header="Date" Binding="{Binding DriverDate}" Width="140" />
                 <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" />
                 <DataGridTextColumn Header="Hardware ID" Binding="{Binding HardwareId}" Width="200" />
-                <DataGridTextColumn Header="Update" Width="120">
-                    <DataGridTextColumn.Binding>
-                        <Binding Path="UpdateAvailable" StringFormat="{}{0}" />
-                    </DataGridTextColumn.Binding>
-                </DataGridTextColumn>
+                <DataGridTextColumn Header="Update Available" Binding="{Binding UpdateAvailable}" Width="120" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

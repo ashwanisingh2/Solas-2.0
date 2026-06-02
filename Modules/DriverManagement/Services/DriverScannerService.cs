@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Management;
 using System.Threading.Tasks;
 using Modules.DriverManagement.Interfaces;
@@ -39,7 +40,7 @@ namespace Modules.DriverManagement.Services
                                 Vendor = GetString(obj, "Manufacturer"),
                                 ProviderName = GetString(obj, "ProviderName"),
                                 DriverVersion = GetString(obj, "DriverVersion"),
-                                Status = GetString(obj, "Status"),
+                                Status = GetString(obj, "Status") ?? "OK",
                                 HardwareId = GetString(obj, "HardwareId"),
                                 PnpDeviceId = GetString(obj, "DeviceID"),
                                 InfName = GetString(obj, "InfName"),
@@ -77,6 +78,63 @@ namespace Modules.DriverManagement.Services
                 catch (ManagementException mex)
                 {
                     throw new InvalidOperationException("Failed to query Win32_PnPSignedDriver: " + mex.Message, mex);
+                }
+
+                // Query Win32_PnPEntity for devices with issues (ConfigManagerErrorCode > 0, e.g. Error 28 is Missing Driver)
+                try
+                {
+                    var entityQuery = new SelectQuery("Win32_PnPEntity", "ConfigManagerErrorCode > 0");
+                    using var entitySearcher = new ManagementObjectSearcher(entityQuery);
+                    foreach (ManagementObject obj in entitySearcher.Get())
+                    {
+                        try
+                        {
+                            var errorCodeObj = obj["ConfigManagerErrorCode"];
+                            if (errorCodeObj != null)
+                            {
+                                var errorCode = Convert.ToUInt32(errorCodeObj);
+                                string statusStr = errorCode switch
+                                {
+                                    28 => "Missing Driver (Error 28)",
+                                    1 => "Not Configured (Error 1)",
+                                    10 => "Cannot Start (Error 10)",
+                                    22 => "Disabled (Error 22)",
+                                    _ => $"Device Error (Code {errorCode})"
+                                };
+
+                                var hardwareIdsObj = obj["HardwareID"] as string[];
+                                string hardwareIdStr = hardwareIdsObj != null ? string.Join(";", hardwareIdsObj) : string.Empty;
+
+                                var driver = new Driver
+                                {
+                                    DeviceName = GetString(obj, "Name") ?? GetString(obj, "Caption") ?? "Unknown Device",
+                                    Vendor = GetString(obj, "Manufacturer") ?? "Unknown Vendor",
+                                    ProviderName = "N/A",
+                                    DriverVersion = "None",
+                                    Status = statusStr,
+                                    HardwareId = hardwareIdStr,
+                                    PnpDeviceId = GetString(obj, "DeviceID"),
+                                    InfName = string.Empty,
+                                    IsSigned = false
+                                };
+                                driver.CreatedAt = DateTime.UtcNow;
+
+                                // Prevent duplicate entries
+                                if (!results.Any(r => r.PnpDeviceId == driver.PnpDeviceId))
+                                {
+                                    results.Add(driver);
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // ignore individual problem device errors
+                        }
+                    }
+                }
+                catch
+                {
+                    // ignore entire entity scan failure
                 }
 
                 lock (_cacheLock)

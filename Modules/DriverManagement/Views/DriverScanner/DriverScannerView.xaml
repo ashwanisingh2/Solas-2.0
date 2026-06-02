@@ -4,21 +4,101 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="Modules.DriverManagement.Views.DriverScanner.DriverScannerView">
-    <Grid Margin="12">
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-            <Button Content="Scan" Command="{Binding ScanCommand}" Width="100" />
-            <TextBlock Text="Scanning..." Visibility="{Binding IsScanning, Converter={StaticResource BoolToVis}}" Margin="8,0,0,0" VerticalAlignment="Center" />
-        </StackPanel>
+    <UserControl.Resources>
+        <!-- Modern Flat TabControl styling -->
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
 
-        <DataGrid ItemsSource="{Binding Drivers}" AutoGenerateColumns="False" IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Device" Binding="{Binding DeviceName}" Width="*" />
-                <DataGridTextColumn Header="Vendor" Binding="{Binding Vendor}" Width="150" />
-                <DataGridTextColumn Header="Version" Binding="{Binding DriverVersion}" Width="120" />
-                <DataGridTextColumn Header="Date" Binding="{Binding DriverDate}" Width="140" />
-                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" />
-                <DataGridTextColumn Header="Hardware ID" Binding="{Binding HardwareId}" Width="200" />
-            </DataGrid.Columns>
-        </DataGrid>
+        <Style TargetType="TabItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#A0A0A5" />
+            <Setter Property="Padding" Value="20,12" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="TabBorder" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="0,0,0,2" Padding="{TemplateBinding Padding}" Margin="0,0,8,0">
+                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#FFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Foreground" Value="#7C4DFF" />
+                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="#7C4DFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid Margin="16">
+        <TabControl>
+            <!-- Tab 1: Driver Updates & Scanner -->
+            <TabItem Header="Driver Diagnostics &amp; Repairs">
+                <Grid Margin="0,16,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                        <Button Content="Scan Drivers" Command="{Binding ScanCommand}" Width="120" Height="32" Background="#7C4DFF" Foreground="#FFFFFF" />
+                        <Button Content="Fix Selected Device" Command="{Binding FixSelectedDriverCommand}" Width="160" Height="32" Margin="8,0,0,0" />
+                        <TextBlock Text="Working..." Visibility="{Binding IsScanning, Converter={StaticResource BoolToVis}}" Margin="16,0,0,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#7C4DFF" />
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" Foreground="#A0A0A5" Margin="0,0,0,8" FontSize="12" />
+
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding Drivers}" SelectedItem="{Binding SelectedDriver}" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="1" BorderBrush="#2A2A2E" Background="#1E1E22">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Device" Binding="{Binding DeviceName}" Width="*" />
+                            <DataGridTextColumn Header="Vendor" Binding="{Binding Vendor}" Width="150" />
+                            <DataGridTextColumn Header="Version" Binding="{Binding DriverVersion}" Width="120" />
+                            <DataGridTextColumn Header="Date" Binding="{Binding DriverDate}" Width="140" />
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" />
+                            <DataGridTextColumn Header="Hardware ID" Binding="{Binding HardwareId}" Width="200" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <!-- Tab 2: Winget Software Updates -->
+            <TabItem Header="Software Updater (Winget)">
+                <Grid Margin="0,16,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                        <Button Content="Scan Software Updates" Command="{Binding ScanSoftwareCommand}" Width="180" Height="32" Background="#7C4DFF" Foreground="#FFFFFF" />
+                        <Button Content="Update Selected App" Command="{Binding UpdateSoftwareCommand}" Width="180" Height="32" Margin="8,0,0,0" />
+                        <TextBlock Text="Working..." Visibility="{Binding IsSoftwareScanning, Converter={StaticResource BoolToVis}}" Margin="16,0,0,0" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#7C4DFF" />
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="1" Text="{Binding SoftwareStatusMessage}" Foreground="#A0A0A5" Margin="0,0,0,8" FontSize="12" />
+
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding SoftwareUpdates}" SelectedItem="{Binding SelectedSoftwareUpdate}" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="1" BorderBrush="#2A2A2E" Background="#1E1E22">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Application Name" Binding="{Binding Name}" Width="*" />
+                            <DataGridTextColumn Header="Package ID" Binding="{Binding Id}" Width="220" />
+                            <DataGridTextColumn Header="Installed Version" Binding="{Binding CurrentVersion}" Width="150" />
+                            <DataGridTextColumn Header="Available Version" Binding="{Binding AvailableVersion}" Width="150" />
+                            <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="100" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

@@ -37,16 +37,56 @@ namespace Modules.DriverManagement.ViewModels
         public double CpuPercentage { get => _cpuPercentage; set => SetProperty(ref _cpuPercentage, value); }
 
         private long _totalMemoryMb;
-        public long TotalMemoryMb { get => _totalMemoryMb; set => SetProperty(ref _totalMemoryMb, value); }
+        public long TotalMemoryMb
+        {
+            get => _totalMemoryMb;
+            set
+            {
+                if (SetProperty(ref _totalMemoryMb, value))
+                {
+                    OnPropertyChanged(nameof(MemoryUsedPercentage));
+                }
+            }
+        }
 
         private long _freeMemoryMb;
-        public long FreeMemoryMb { get => _freeMemoryMb; set => SetProperty(ref _freeMemoryMb, value); }
+        public long FreeMemoryMb
+        {
+            get => _freeMemoryMb;
+            set
+            {
+                if (SetProperty(ref _freeMemoryMb, value))
+                {
+                    OnPropertyChanged(nameof(MemoryUsedPercentage));
+                }
+            }
+        }
 
         private long _diskTotalMb;
-        public long DiskTotalMb { get => _diskTotalMb; set => SetProperty(ref _diskTotalMb, value); }
+        public long DiskTotalMb
+        {
+            get => _diskTotalMb;
+            set
+            {
+                if (SetProperty(ref _diskTotalMb, value))
+                {
+                    OnPropertyChanged(nameof(DiskUsedPercentage));
+                }
+            }
+        }
 
         private long _diskFreeMb;
-        public long DiskFreeMb { get => _diskFreeMb; set => SetProperty(ref _diskFreeMb, value); }
+        public long DiskFreeMb
+        {
+            get => _diskFreeMb;
+            set
+            {
+                if (SetProperty(ref _diskFreeMb, value))
+                {
+                    OnPropertyChanged(nameof(DiskUsedPercentage));
+                }
+            }
+        }
 
         private bool _networkAvailable;
         public bool NetworkAvailable { get => _networkAvailable; set => SetProperty(ref _networkAvailable, value); }
@@ -56,6 +96,9 @@ namespace Modules.DriverManagement.ViewModels
 
         private bool _driversUpToDate;
         public bool DriversUpToDate { get => _driversUpToDate; set => SetProperty(ref _driversUpToDate, value); }
+
+        public double MemoryUsedPercentage => TotalMemoryMb > 0 ? (double)(TotalMemoryMb - FreeMemoryMb) * 100 / TotalMemoryMb : 0;
+        public double DiskUsedPercentage => DiskTotalMb > 0 ? (double)(DiskTotalMb - DiskFreeMb) * 100 / DiskTotalMb : 0;
 
         private bool _isRefreshing;
         public bool IsRefreshing { get => _isRefreshing; set => SetProperty(ref _isRefreshing, value); }

@@ -27,7 +27,7 @@ namespace Modules.DriverManagement.Services
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        public async Task<RepairResult> RunRepairAsync(string scriptName)
+        public async Task<RepairResult> RunRepairAsync(string scriptName, string arguments = "")
         {
             var result = new RepairResult();
 
@@ -52,7 +52,7 @@ namespace Modules.DriverManagement.Services
             var psi = new ProcessStartInfo
             {
                 FileName = "powershell.exe",
-                Arguments = $"-NoProfile -ExecutionPolicy Bypass -File \"{scriptPath}\"",
+                Arguments = $"-NoProfile -ExecutionPolicy Bypass -File \"{scriptPath}\" {arguments}",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,

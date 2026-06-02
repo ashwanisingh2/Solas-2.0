@@ -4,20 +4,100 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="Modules.DriverManagement.Views.DriverSettings.DriverSettingsView">
-    <Grid Margin="12">
-        <StackPanel Orientation="Vertical" Width="600">
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                <TextBlock Text="Database Path:" VerticalAlignment="Center" Width="120" />
-                <TextBox Text="{Binding DatabasePath}" Width="440" />
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,24">
+                <TextBlock Text="System Settings" Style="{StaticResource HeadingText}" />
+                <TextBlock Text="Configure environment paths and automated scheduled care tasks." Style="{StaticResource SubHeadingText}" Margin="0,4,0,0" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                <TextBlock Text="Backup Folder:" VerticalAlignment="Center" Width="120" />
-                <TextBox Text="{Binding BackupFolder}" Width="440" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Save" Command="{Binding SaveCommand}" Width="100" />
-                <Button Content="Ensure Database" Command="{Binding EnsureDatabaseCommand}" Width="140" Margin="8,0,0,0" />
-            </StackPanel>
-        </StackPanel>
-    </Grid>
+
+            <!-- Card 1: Database & Path Configuration -->
+            <Border Grid.Row="1" Background="{StaticResource CardBg}" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Core Storage &amp; Backup Directories" Foreground="#FFFFFF" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,16" />
+                    
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,16">
+                        <TextBlock Text="Database File Path" Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,6" />
+                        <TextBox Text="{Binding DatabasePath}" HorizontalAlignment="Stretch" Height="36" VerticalContentAlignment="Center" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,20">
+                        <TextBlock Text="Driver Backup Directory" Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,0,0,6" />
+                        <TextBox Text="{Binding BackupFolder}" HorizontalAlignment="Stretch" Height="36" VerticalContentAlignment="Center" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Save Paths" Command="{Binding SaveCommand}" Width="120" Height="32" Background="{StaticResource AccentColor}" Foreground="#FFFFFF" />
+                        <Button Content="Ensure Schema" Command="{Binding EnsureDatabaseCommand}" Width="130" Height="32" Margin="12,0,0,0" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Card 2: Auto-Pilot Scheduler (Weekly System Care) -->
+            <Border Grid.Row="2" Background="{StaticResource CardBg}" CornerRadius="8" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Auto-Pilot Automated Care" Foreground="#FFFFFF" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8" />
+                    <TextBlock Text="Configure a weekly automated Windows Task Scheduler job to run system junk cleaning, network tuning, disk trim, SFC check, and driver diagnostics using the system-level Administrator context." 
+                               Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="12" Margin="0,0,0,16" LineHeight="18" />
+
+                    <!-- Status Display -->
+                    <Border Background="#121214" CornerRadius="6" Padding="12,10" Margin="0,0,0,16" BorderBrush="#2C2C32" BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <!-- Active/Inactive Status Dot -->
+                            <Ellipse Width="10" Height="10" VerticalAlignment="Center" Margin="0,0,10,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="#E53935" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsWeeklyCareScheduled}" Value="True">
+                                                <Setter Property="Fill" Value="#4CAF50" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Grid.Column="1" Text="{Binding ScheduleStatusMessage}" Foreground="#FFFFFF" FontSize="13" VerticalAlignment="Center" FontWeight="Medium" />
+                        </Grid>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Enable Weekly Care" Command="{Binding ScheduleCareCommand}" Width="160" Height="32" Background="#2E7D32" Foreground="#FFFFFF">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsWeeklyCareScheduled}" Value="True">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Content="Disable Weekly Care" Command="{Binding UnscheduleCareCommand}" Width="160" Height="32" Margin="12,0,0,0" Background="#C62828" Foreground="#FFFFFF">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsWeeklyCareScheduled}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

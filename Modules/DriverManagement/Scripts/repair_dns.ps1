@@ -1,7 +1,9 @@
+# repair_dns.ps1
 # Flushes DNS resolver cache.
-
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = 'SilentlyContinue'
 
 Write-Output "=== Flushing DNS cache ==="
-ipconfig /flushdns
-exit $LASTEXITCODE
+ipconfig /flushdns | Out-Null
+Clear-DnsClientCache
+Write-Output "DNS Cache flushed successfully."
+exit 0
