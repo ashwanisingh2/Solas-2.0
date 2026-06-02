@@ -99,6 +99,35 @@ CREATE TABLE IF NOT EXISTS DM_Metadata (
     Value TEXT
 );
 
+-- Repairs table to record repair operations
+CREATE TABLE IF NOT EXISTS Repairs (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    StartedAt TEXT DEFAULT (datetime('now')),
+    CompletedAt TEXT,
+    Module TEXT NOT NULL,
+    Action TEXT NOT NULL,
+    Success INTEGER DEFAULT 0,
+    Summary TEXT,
+    Log TEXT
+);
+
+CREATE INDEX IF NOT EXISTS IDX_Repairs_StartedAt ON Repairs(StartedAt);
+
+-- Repair action logs for step-by-step traceability
+CREATE TABLE IF NOT EXISTS RepairLogs (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    RepairId INTEGER NOT NULL,
+    StepOrder INTEGER NOT NULL,
+    StepName TEXT NOT NULL,
+    StartedAt TEXT DEFAULT (datetime('now')),
+    CompletedAt TEXT,
+    Success INTEGER DEFAULT 0,
+    Output TEXT,
+    FOREIGN KEY (RepairId) REFERENCES Repairs(Id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS IDX_RepairLogs_RepairId ON RepairLogs(RepairId);
+
 -- Ensure foreign keys and journal mode are set for production usage via connection
 -- Note: Enable WAL mode at runtime for better concurrency if desired:
 -- PRAGMA journal_mode = WAL;
