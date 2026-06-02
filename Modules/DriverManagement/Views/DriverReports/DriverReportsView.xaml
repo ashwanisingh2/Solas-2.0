@@ -1,0 +1,23 @@
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Modules.DriverManagement.Views.DriverReports.DriverReportsView">
+    <Grid Margin="12">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+            <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" Width="120" />
+            <Button Content="Export JSON" Command="{Binding ExportJsonCommand}" Width="120" Margin="8,0,0,0" />
+            <Button Content="Export PDF" Command="{Binding ExportPdfCommand}" Width="120" Margin="8,0,0,0" />
+            <Button Content="Refresh" Command="{Binding RefreshCommand}" Width="100" Margin="12,0,0,0" />
+        </StackPanel>
+
+        <DataGrid ItemsSource="{Binding Reports}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" Binding="{Binding GeneratedAt}" Width="150" />
+                <DataGridTextColumn Header="Format" Binding="{Binding Format}" Width="80" />
+                <DataGridTextColumn Header="Path" Binding="{Binding FilePath}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

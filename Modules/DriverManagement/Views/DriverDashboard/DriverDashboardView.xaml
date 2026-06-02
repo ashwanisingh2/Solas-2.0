@@ -1,0 +1,58 @@
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Modules.DriverManagement.Views.DriverDashboard.DriverDashboardView">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,12">
+            <Button Content="Refresh" Command="{Binding RefreshCommand}" Width="100" Margin="0,0,8,0" />
+            <TextBlock Text="Health Score:" VerticalAlignment="Center" Margin="8,0,4,0" />
+            <TextBlock Text="{Binding HealthScore}" VerticalAlignment="Center" FontWeight="Bold" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,12">
+            <Border Background="#FFEEF8" Padding="12" Margin="0,0,8,0" CornerRadius="4">
+                <StackPanel>
+                    <TextBlock Text="Total Drivers" Foreground="#333" />
+                    <TextBlock Text="{Binding TotalDrivers}" FontSize="18" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+            <Border Background="#E8FFF0" Padding="12" Margin="0,0,8,0" CornerRadius="4">
+                <StackPanel>
+                    <TextBlock Text="Healthy" Foreground="#333" />
+                    <TextBlock Text="{Binding HealthyDrivers}" FontSize="18" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+            <Border Background="#FFF7E8" Padding="12" Margin="0,0,8,0" CornerRadius="4">
+                <StackPanel>
+                    <TextBlock Text="Warning" Foreground="#333" />
+                    <TextBlock Text="{Binding WarningDrivers}" FontSize="18" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+            <Border Background="#FFECEC" Padding="12" CornerRadius="4">
+                <StackPanel>
+                    <TextBlock Text="Critical" Foreground="#333" />
+                    <TextBlock Text="{Binding CriticalDrivers}" FontSize="18" FontWeight="Bold" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Drivers}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Device" Binding="{Binding DeviceName}" Width="*" />
+                <DataGridTextColumn Header="Vendor" Binding="{Binding Vendor}" Width="150" />
+                <DataGridTextColumn Header="Version" Binding="{Binding DriverVersion}" Width="120" />
+                <DataGridTextColumn Header="Date" Binding="{Binding DriverDate}" Width="140" />
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" />
+                <DataGridTextColumn Header="Hardware ID" Binding="{Binding HardwareId}" Width="200" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

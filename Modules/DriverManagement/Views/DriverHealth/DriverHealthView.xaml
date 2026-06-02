@@ -1,0 +1,33 @@
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Modules.DriverManagement.Views.DriverHealth.DriverHealthView">
+    <Grid Margin="12">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+            <Button Content="Analyze" Command="{Binding AnalyzeCommand}" Width="100" />
+            <TextBlock Text="Health Score:" Margin="12,0,4,0" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding HealthScore}" FontWeight="Bold" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="Total:" />
+            <TextBlock Text="{Binding TotalDrivers}" FontWeight="Bold" Margin="4,0,12,0" />
+            <TextBlock Text="Healthy:" />
+            <TextBlock Text="{Binding HealthyDrivers}" FontWeight="Bold" Margin="4,0,12,0" />
+            <TextBlock Text="Warning:" />
+            <TextBlock Text="{Binding WarningDrivers}" FontWeight="Bold" Margin="4,0,12,0" />
+            <TextBlock Text="Critical:" />
+            <TextBlock Text="{Binding CriticalDrivers}" FontWeight="Bold" Margin="4,0,12,0" />
+        </StackPanel>
+
+        <DataGrid ItemsSource="{Binding Drivers}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Device" Binding="{Binding DeviceName}" Width="*" />
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" />
+                <DataGridTextColumn Header="Health" Binding="{Binding DriverVersion}" Width="100" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

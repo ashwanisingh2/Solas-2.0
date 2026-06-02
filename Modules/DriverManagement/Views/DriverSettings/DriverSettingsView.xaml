@@ -1,0 +1,23 @@
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Modules.DriverManagement.Views.DriverSettings.DriverSettingsView">
+    <Grid Margin="12">
+        <StackPanel Orientation="Vertical" Width="600">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <TextBlock Text="Database Path:" VerticalAlignment="Center" Width="120" />
+                <TextBox Text="{Binding DatabasePath}" Width="440" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <TextBlock Text="Backup Folder:" VerticalAlignment="Center" Width="120" />
+                <TextBox Text="{Binding BackupFolder}" Width="440" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Save" Command="{Binding SaveCommand}" Width="100" />
+                <Button Content="Ensure Database" Command="{Binding EnsureDatabaseCommand}" Width="140" Margin="8,0,0,0" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
